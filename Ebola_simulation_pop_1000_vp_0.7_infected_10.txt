@@ -1,0 +1,1 @@
+Population size: 1000, Percent Vaccinated: 0.7, Virus Name: Ebola, Mortality Rate: 0.9, Reproduction Rate: 0.25 
