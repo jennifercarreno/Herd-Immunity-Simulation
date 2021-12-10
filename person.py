@@ -1,5 +1,5 @@
 import random
-random.seed(42)
+# random.seed(42)
 from virus import Virus
 
 
@@ -43,6 +43,14 @@ class Person(object):
             return True
         
 
+if __name__ == "__main__":
+    # This section is incomplete finish it and use it to test your Person class
+    # TODO Define a vaccinated person and check their attributes
+    vaccinated_person = Person(1, True)
+    assert vaccinated_person._id == 1
+    assert vaccinated_person.is_alive is True
+    assert vaccinated_person.is_vaccinated is True
+    assert vaccinated_person.infection is None
 
 ''' These are simple tests to ensure that you are instantiating your Person class correctly. '''
 def test_vacc_person_instantiation():
@@ -66,13 +74,13 @@ def test_not_vacc_person_instantiation():
 
 
 
-def test_sick_person_instantiation():
+    # Test an infected person. An infected person has an infection/virus
     # Create a Virus object to give a Person object an infection
     virus = Virus("Dysentery", 0.7, 0.2)
     # Create a Person object and give them the virus infection
-    person = Person(3, False, virus)
+    infected_person = Person(3, False, virus)
     # TODO: complete your own assert statements that test
-    # the values at each attribute
+    # the values of each attribute
     # assert ...
     assert person._id == 3
     assert person.is_alive is True
@@ -80,12 +88,17 @@ def test_sick_person_instantiation():
     assert person.infection is None
     
 
+    # You need to check the survival of an infected person. Since the chance
+    # of survival is random you need to check a group of people. 
+    # Create a list to hold 100 people. Use the loop below to make 100 people
+    people = []
+    for i in range(1, 100):
+        # TODO Make a person with an infection
+        # TODO Append the person to the people list
+        pass
 
-def test_did_survive_infection():
-    # TODO: Create a Virus object to give a Person object an infection
-    virus = Virus("Dysentery", 0.7, 0.2)
-    # TODO: Create a Person object and give them the virus infection
-    person = Person(4, False, virus)
+    # Now that you have a list of 100 people. Resolve whether the Person 
+    # survives the infection or not by looping over the people list. 
 
     # Resolve whether the Person survives the infection or not
     survived = person.did_survive_infection()
