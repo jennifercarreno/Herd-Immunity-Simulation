@@ -20,7 +20,7 @@ class Person(object):
         self.infection = infection
         self.is_infected = False  # boolean
 
-    def did_survive_infection(self):
+    def did_survive_infection(self, virus):
         ''' Generate a random number and compare to virus's mortality_rate.
         If random number is smaller, person dies from the disease.
         If Person survives, they become vaccinated and they have no infection.
@@ -28,17 +28,19 @@ class Person(object):
         '''
         # Only called if infection attribute is not None.
         # TODO:  Finish this method. Should return a Boolean
-        random_number = random()
+        random_number = random.random()
+        # print(f"this is the random number: {random_number}")
         survived = None
-        if random_number < Virus.mortality_rate:
+        if random_number < virus.mortality_rate:
+            # print(random_number < virus.mortality_rate)
             self.is_alive = False
-            survived = False
-            return survived
-        else: 
+            self.is_infected = False
+            return False
+        elif random_number > virus.mortality_rate: 
             self.is_vaccinated = True
             self.is_alive = True
-            survived = True
-            return survived
+            self.is_infected = False
+            return True
         
 
 

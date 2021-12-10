@@ -46,11 +46,11 @@ class Logger(object):
         
         log_file = open(self.file_name, "a")
         if person2_vacc is False or person2_sick is False:
-            log_file.write(f"{person1.id} infects {person2.id}\n")
+            log_file.write(f"{person1._id} infects {person2._id}\n")
         elif person2_vacc: 
-            log_file.write(f"{person1.id} didn't infect {person2.id} because vaccinated \n")
+            log_file.write(f"{person1._id} didn't infect {person2._id} because vaccinated \n")
         elif person2_sick:
-            log_file.write(f"{person1.id} didn't infect {person2} because they were already sick \n")
+            log_file.write(f"{person1._id} didn't infect {person2._id} because they were already sick \n")
 
         log_file.close()
 
@@ -65,30 +65,17 @@ class Logger(object):
         # should be False.  Otherwise, did_die_from_infection should be True.
         # Append the results of the infection to the logfile
         log_file = open(self.file_name, "a")
-        if person.did_survive_infection:
-            log_file.write(f"{person.id} survived infection \n")
-        else:
-            log_file.write(f"{person.id} died from infection \n")
+        if survived:
+            log_file.write(f"{person._id} survived infection \n")
+        elif survived == False:
+            log_file.write(f"{person._id} died from infection \n")
 
         log_file.close()
         
 
-    def log_time_step(self, time_step_number):
-        ''' STRETCH CHALLENGE DETAILS:
+    def log_answers(self, percentage):
+        log_file = open(self.file_name, "a")
+        log_file.write(f"percentage of population infected before the virus burned out: {percentage}")
+        log_file.close()
 
-        If you choose to extend this method, the format of the summary statistics logged
-        are up to you.
-
-        At minimum, it should contain:
-            The number of people that were infected during this specific time step.
-            The number of people that died on this specific time step.
-            The total number of people infected in the population, including the newly infected
-            The total number of dead, including those that died during this time step.
-
-        The format of this log should be:
-            "Time step {time_step_number} ended, beginning {time_step_number + 1}\n"
-        '''
-        # TODO: Finish this method. This method should log when a time step ends, and a
-        # new one begins.
-        # NOTE: Here is an opportunity for a stretch challenge!
         pass

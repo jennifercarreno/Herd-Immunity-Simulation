@@ -1,4 +1,5 @@
 import random, sys
+# from typing_extensions import final
 random.seed(42)
 from person import Person
 from logger import Logger
@@ -54,6 +55,7 @@ class Simulation(object):
         self.current_infected = 0 # Int
 
         self.vacc_percentage = vacc_percentage # float between 0 and 1
+        self.vaccinated_saved = 0
         self.total_dead = 0 # Int
         self.file_name = "{}_simulation_pop_{}_vp_{}_infected_{}.txt".format(self.virus.name, pop_size, vacc_percentage, initial_infected)
         self.logger = Logger(self.file_name)
@@ -89,7 +91,7 @@ class Simulation(object):
         
         for i in range(initial_infected):
             infected_person = random.choice(self.population)
-            infected_person.infection = self.virus
+            infected_person.is_infected = True
             self.infected_people.append(infected_person)
 
 
@@ -107,6 +109,13 @@ class Simulation(object):
         for person in self.population:
             if person.is_vaccinated:
                 total_vaccinated += 1
+        
+        print(self.pop_size)
+        print(self.total_dead)
+        # print(self.infected_people)
+        print(total_vaccinated)
+        print(self.vaccinated_saved)
+        
 
         if total_vaccinated == self.pop_size or self.total_dead == self.pop_size or len(self.infected_people) == 0:
             return False
@@ -132,6 +141,10 @@ class Simulation(object):
             # round of this simulation.
             time_step_counter += 1
             self.time_step()
+            print(f"we are on this step: {time_step_counter}")
+            print(f"infected people: {len(self.infected_people)}")
+
+            
         print(f'The simulation has ended after {time_step_counter} turns.')
 
     def time_step(self):
@@ -150,16 +163,30 @@ class Simulation(object):
 
         interaction_counter = 0 
 
-        for i in range(100):
-            person1 = random.choice(self.infected_people)
-            person2 = random.choice(self.population)
-            if person1.is_alive and person2.is_alive:
-                self.interaction(person1, person2)
-                interaction_counter += 1
-
-
+        for person1 in self.infected_people:
+            for i in range(100):
+                person2 = random.choice(self.population)
+                if person1.is_alive and person2.is_alive:
+                    self.interaction(person1, person2)
+                    interaction_counter += 1
+            
+            if person1.did_survive_infection(self.virus):
+                
+                self.logger.log_infection_survival(person1, survived = False)
+                self.infected_people.remove(person1)
+                # print("did survive returned false, person did not die")
+            else:
+                self.logger.log_infection_survival(person1, survived = True)
+                self.infected_people.remove(person1)
+                # print("someone died")
+                self.total_dead +=1  
+        
+        self._infect_newly_infected()
 
         
+        
+
+
 
 
     def interaction(self, person1, person2):
@@ -186,22 +213,24 @@ class Simulation(object):
             #     than repro_rate, random_person's ID should be appended to
             #     Simulation object's newly_infected array, so that their .infected
             #     attribute can be changed to True at the end of the time step.
-
+        
+        
         if person2.is_vaccinated:
-            print("person is vaccinated")
-            Logger.log_interaction(person1, person2, person2_vacc=True)
+            # print("person is vaccinated")
+            self.logger.log_interaction(person1, person2, person2_vacc=True)
+            self.vaccinated_saved += 1
         elif person2.is_infected:
-            print("person is infected, nothing happens")
-            Logger.log_interaction(person1, person2, person2_sick = True)
-        elif person2.is_vaccinated and person2.is_infected is False:
-            random_number = random(0,1)
-            if random_number < Virus.repro_num:
-                self.newly_infected.append(person2._id) 
-                person2.is_infected = True
-                self._infect_newly_infected()
-                Logger.log_interaction(person1, person2)
+            # print("person is infected, nothing happens")
+            self.logger.log_interaction(person1, person2, person2_sick = True)
+        elif person2.is_vaccinated is False and person2.is_infected is False:
+            random_number = random.random()
+            if random_number < self.virus.repro_rate:
+                if person2 not in self.newly_infected:
+                    self.newly_infected.append(person2) 
+                    self.logger.log_interaction(person1, person2, person2_sick=person2.is_infected, person2_vacc=person2.is_vaccinated)
 
-        # TODO: Call slogger method during this method.
+        
+        # TODO: Calls logger method during this method.
         
          
 
@@ -212,10 +241,13 @@ class Simulation(object):
         # TODO: Once you have iterated through the entire list of self.newly_infected, remember
         # to reset self.newly_infected back to an empty list.
 
-        for person in range(self.newly_infected):
+        for person in self.newly_infected:
             person.is_infected = True
+            self.infected_people.append(person)
 
         self.newly_infected = []
+        
+
 
 
 
